@@ -1,3 +1,4 @@
+// package for converting image
 package convert
 
 import (
@@ -8,18 +9,21 @@ import (
 	"path/filepath"
 )
 
+// stdout number
 const (
 	ExitSuccess int = iota
 	ExitError
 	ExitFileError
 )
 
+// interface for specify image type
 type ConvertType interface {
 	GetExt() string
 	Decode(io.Reader) (image.Image, error)
 	Encode(io.Writer, image.Image) error
 }
 
+// get image type by extension.
 func GetImageType(ext string) ConvertType {
 	switch ext {
 	case ".jpg", ".jpeg":
@@ -31,6 +35,8 @@ func GetImageType(ext string) ConvertType {
 	}
 }
 
+// convert original files to new files recursively.
+// original file is removed.
 func Convert(directory string, fromType ConvertType, toType ConvertType) int {
 	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
 
