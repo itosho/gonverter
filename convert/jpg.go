@@ -1,4 +1,4 @@
-package main
+package convert
 
 import (
 	"image"
@@ -6,15 +6,15 @@ import (
 	"io"
 )
 
-type iJpeg struct {
+type cjpg struct {
 	ext string
 }
 
-func (j *iJpeg) getExt() string {
+func (j *cjpg) GetExt() string {
 	return j.ext
 }
 
-func (j *iJpeg) decode(file io.Reader) (image.Image, error) {
+func (j *cjpg) Decode(file io.Reader) (image.Image, error) {
 	img, err := jpeg.Decode(file)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (j *iJpeg) decode(file io.Reader) (image.Image, error) {
 	return img, nil
 }
 
-func (j *iJpeg) encode(out io.Writer, img image.Image) error {
+func (j *cjpg) Encode(out io.Writer, img image.Image) error {
 	err := jpeg.Encode(out, img, &jpeg.Options{Quality: 100})
 	if err != nil {
 		return err

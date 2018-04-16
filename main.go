@@ -4,6 +4,8 @@ import (
 	"flag"
 	"log"
 	"os"
+
+	"github.com/itosho/gonverter/convert"
 )
 
 const (
@@ -25,16 +27,16 @@ func main() {
 	args := flag.Args()
 	directory := args[0]
 
-	fromType := getImageType(*fromExt)
+	fromType := convert.GetImageType(*fromExt)
 	if fromType == nil {
 		log.Fatalln("Invalid extenstion type.")
 	}
 
-	toType := getImageType(*toExt)
+	toType := convert.GetImageType(*toExt)
 	if toType == nil {
 		log.Fatalln("Invalid extenstion type.")
 	}
 
-	code := filePathWalk(directory, fromType, toType)
+	code := convert.Convert(directory, fromType, toType)
 	os.Exit(code)
 }
