@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -17,6 +18,7 @@ const (
 func main() {
 	var fromExt = flag.String("f", ".jpg", "from extension")
 	var toExt = flag.String("t", ".png", "to extension")
+	flag.Usage = usage
 
 	flag.Parse()
 
@@ -39,4 +41,10 @@ func main() {
 
 	code := convert.Convert(directory, fromType, toType)
 	os.Exit(code)
+}
+
+func usage() {
+	fmt.Println("usage: gonverter [-f from extension] [-t to extension] [directory]")
+	flag.PrintDefaults()
+	os.Exit(ExitSuccess)
 }
