@@ -30,6 +30,8 @@ func GetImageType(ext string) ConvertType {
 		return &cjpg{ext}
 	case ".png":
 		return &cpng{ext}
+	case ".gif":
+		return &cgif{ext}
 	default:
 		return nil
 	}
@@ -56,6 +58,7 @@ func Convert(directory string, fromType ConvertType, toType ConvertType) int {
 	})
 
 	if err != nil {
+		fmt.Fprintln(os.Stderr, "Convert Error. The following are the details.")
 		fmt.Fprintln(os.Stderr, err)
 		return ExitError
 	}

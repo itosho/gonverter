@@ -31,12 +31,12 @@ func main() {
 
 	fromType := convert.GetImageType(*fromExt)
 	if fromType == nil {
-		log.Fatalln("Invalid extenstion type.")
+		log.Fatalln("Invalid from extenstion type. Please specify `.jpg(jpeg)`, `.png` or `.gif` for option.")
 	}
 
 	toType := convert.GetImageType(*toExt)
 	if toType == nil {
-		log.Fatalln("Invalid extenstion type.")
+		log.Fatalln("Invalid from extenstion type. Please specify `.jpg(jpeg)`, `.png` or `.gif` for option.")
 	}
 
 	code := convert.Convert(directory, fromType, toType)
