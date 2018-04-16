@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"image/jpeg"
-	"image/png"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,7 +16,7 @@ const (
 
 func main() {
 	var fromExt = flag.String("f", ".jpg", "from extension")
-	// var toExt = flag.String("t", "png", "to extension")
+	var toExt = flag.String("t", ".png", "to extension")
 
 	flag.Parse()
 
@@ -29,12 +27,24 @@ func main() {
 	args := flag.Args()
 	directory := args[0]
 
-	code := filePathWalk(directory, *fromExt)
+	fromType := getImageType(*fromExt)
+	if fromType == nil {
+		log.Fatalln("Invalid extenstion type.")
+	}
+
+	toType := getImageType(*toExt)
+	if toType == nil {
+		log.Fatalln("Invalid extenstion type.")
+	}
+
+	code := filePathWalk(directory, fromType, toType)
 	os.Exit(code)
 }
 
-func filePathWalk(directory string, fromExt string) int {
+func filePathWalk(directory string, fromType imageType, toType imageType) int {
 	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+		fromExt := fromType.getExt()
+
 		if filepath.Ext(path) == fromExt {
 			file, err := os.Open(path)
 			if err != nil {
@@ -42,23 +52,27 @@ func filePathWalk(directory string, fromExt string) int {
 			}
 			defer file.Close()
 
-			img, err := jpeg.Decode(file)
+			img, err := fromType.decode(file)
 			if err != nil {
-				fmt.Println(path)
 				return err
 			}
 
-			out, err := os.Create(path[:len(path)-len(fromExt)] + ".png")
+			out, err := os.Create(path[:len(path)-len(fromExt)] + toType.getExt())
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
 				return err
 			}
 			defer out.Close()
 
-			png.Encode(out, img)
+			toType.encode(out, img)
+
+			if err := os.Remove(path); err != nil {
+				return err
+			}
 		}
+
 		return nil
 	})
+
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return ExitError
