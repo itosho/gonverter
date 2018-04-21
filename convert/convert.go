@@ -16,6 +16,14 @@ const (
 	ExitFileError
 )
 
+type Decoder interface {
+	Decode(io.Reader) (image.Image, error)
+}
+
+type Encoder interface {
+	Encode(io.Writer, image.Image) error
+}
+
 // interface for specify image type
 type ConvertType interface {
 	GetExt() string
