@@ -4,6 +4,8 @@ import (
 	"image"
 	"image/gif"
 	"io"
+
+	"github.com/itosho/gonverter/cli"
 )
 
 const (
@@ -11,6 +13,10 @@ const (
 )
 
 type Gif struct{}
+
+func init() {
+	cli.Register(".gif", Gif{})
+}
 
 func (g Gif) Decode(file io.Reader) (image.Image, error) {
 	return gif.Decode(file)

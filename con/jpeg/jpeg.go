@@ -8,11 +8,11 @@ import (
 	"github.com/itosho/gonverter/cli"
 )
 
-type Jpeg struct{}
-
 const (
 	Quality = 100
 )
+
+type Jpeg struct{}
 
 func init() {
 	cli.Register(".jpeg", Jpeg{})
