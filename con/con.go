@@ -6,13 +6,6 @@ import (
 	"io"
 )
 
-// stdout number
-const (
-	ExitSuccess int = iota
-	ExitError
-	ExitFileError
-)
-
 type DecodeEncoder interface {
 	Decoder
 	Encoder
