@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/itosho/gonverter/convert"
+	_ "github.com/itosho/gonverter/convert/gif"
+	_ "github.com/itosho/gonverter/convert/jpeg"
+	_ "github.com/itosho/gonverter/convert/png"
 )
 
 const (
 	ExitSuccess int = iota
 	ExitError
-	ExitFileError
 )
 
 func main() {
@@ -29,18 +32,39 @@ func main() {
 	args := flag.Args()
 	directory := args[0]
 
-	fromType := convert.GetImageType(*fromExt)
-	if fromType == nil {
-		log.Fatalln("Invalid from extenstion type. Please specify `.jpg(jpeg)`, `.png` or `.gif` for option.")
+	if !convert.IsConvertableImage(*fromExt) || !convert.IsConvertableImage(*toExt) {
+		log.Fatal("Invalid Extension. Please specify jpg, png or gif extension.")
 	}
 
-	toType := convert.GetImageType(*toExt)
-	if toType == nil {
-		log.Fatalln("Invalid from extenstion type. Please specify `.jpg(jpeg)`, `.png` or `.gif` for option.")
-	}
-
-	code := convert.Convert(directory, fromType, toType)
+	code := convertRecursive(directory, *fromExt, *toExt)
 	os.Exit(code)
+}
+
+func convertRecursive(directory string, fromExt string, toExt string) int {
+	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() && filepath.Ext(path) == fromExt {
+			if err := convert.ConvertFile(path, fromExt, toExt); err != nil {
+				return err
+			}
+			if err := convert.RemoveFile(path); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Convert Error. The following are the details.")
+		fmt.Fprintln(os.Stderr, err)
+		return ExitError
+	}
+
+	return ExitSuccess
 }
 
 func usage() {

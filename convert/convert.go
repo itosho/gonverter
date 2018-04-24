@@ -1,94 +1,71 @@
-// package for converting image
 package convert
 
 import (
-	"fmt"
 	"image"
 	"io"
 	"os"
-	"path/filepath"
 )
 
-// stdout number
-const (
-	ExitSuccess int = iota
-	ExitError
-	ExitFileError
-)
+type DecodeEncoder interface {
+	Decoder
+	Encoder
+}
 
-// interface for specify image type
-type ConvertType interface {
-	GetExt() string
+type Decoder interface {
 	Decode(io.Reader) (image.Image, error)
+}
+
+type Encoder interface {
 	Encode(io.Writer, image.Image) error
 }
 
-// get image type by extension.
-func GetImageType(ext string) ConvertType {
-	switch ext {
-	case ".jpg", ".jpeg":
-		return &cjpg{ext}
-	case ".png":
-		return &cpng{ext}
-	case ".gif":
-		return &cgif{ext}
-	default:
-		return nil
-	}
+var images = map[string]DecodeEncoder{}
+
+func Register(ext string, image DecodeEncoder) {
+	images[ext] = image
 }
 
-// convert original files to new files recursively.
-// original file is removed.
-func Convert(directory string, fromType ConvertType, toType ConvertType) int {
-	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-
-		if filepath.Ext(path) == fromType.GetExt() {
-			err := generateConvertFile(path, fromType, toType)
-			if err != nil {
-				return err
-			}
-
-			// remove originalFile
-			if err := os.Remove(path); err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Convert Error. The following are the details.")
-		fmt.Fprintln(os.Stderr, err)
-		return ExitError
-	}
-
-	return ExitSuccess
+func IsConvertableImage(ext string) bool {
+	_, ok := images[ext]
+	return ok
 }
 
-func generateConvertFile(path string, fromType ConvertType, toType ConvertType) error {
-	file, err := os.Open(path)
+func ConvertFile(path string, fromExt string, toExt string) error {
+	inFile, err := os.Open(path)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer inFile.Close()
 
-	img, err := fromType.Decode(file)
+	fromImagePkg, _ := images[fromExt]
+	fromImage, err := fromImagePkg.Decode(inFile)
 	if err != nil {
 		return err
 	}
 
-	convertFilePath := getConvertFilePath(path, fromType.GetExt(), toType.GetExt())
-	out, err := os.Create(convertFilePath)
+	convertFilePath := convertFilePath(path, fromExt, toExt)
+	outFile, err := os.Create(convertFilePath)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer outFile.Close()
 
-	toType.Encode(out, img)
+	toImagePkg, _ := images[toExt]
+	if err := toImagePkg.Encode(outFile, fromImage); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func getConvertFilePath(path string, fromExt string, toExt string) string {
+func RemoveFile(path string) error {
+	if err := os.Remove(path); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func convertFilePath(path string, fromExt string, toExt string) string {
 	return path[:len(path)-len(fromExt)] + toExt
 }
