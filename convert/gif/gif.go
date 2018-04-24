@@ -5,7 +5,7 @@ import (
 	"image/gif"
 	"io"
 
-	"github.com/itosho/gonverter/con"
+	"github.com/itosho/gonverter/convert"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 type Gif struct{}
 
 func init() {
-	con.Register(".gif", Gif{})
+	convert.Register(".gif", Gif{})
 }
 
 func (g Gif) Decode(file io.Reader) (image.Image, error) {

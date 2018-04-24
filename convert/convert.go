@@ -1,5 +1,4 @@
-// package for converting image
-package con
+package convert
 
 import (
 	"image"

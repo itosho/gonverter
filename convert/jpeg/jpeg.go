@@ -5,7 +5,7 @@ import (
 	"image/jpeg"
 	"io"
 
-	"github.com/itosho/gonverter/con"
+	"github.com/itosho/gonverter/convert"
 )
 
 const (
@@ -15,8 +15,8 @@ const (
 type Jpeg struct{}
 
 func init() {
-	con.Register(".jpeg", Jpeg{})
-	con.Register(".jpg", Jpeg{})
+	convert.Register(".jpeg", Jpeg{})
+	convert.Register(".jpg", Jpeg{})
 }
 
 func (j Jpeg) Decode(file io.Reader) (image.Image, error) {

@@ -7,10 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/itosho/gonverter/con"
-	_ "github.com/itosho/gonverter/con/gif"
-	_ "github.com/itosho/gonverter/con/jpeg"
-	_ "github.com/itosho/gonverter/con/png"
+	"github.com/itosho/gonverter/convert"
+	_ "github.com/itosho/gonverter/convert/gif"
+	_ "github.com/itosho/gonverter/convert/jpeg"
+	_ "github.com/itosho/gonverter/convert/png"
 )
 
 const (
@@ -32,7 +32,7 @@ func main() {
 	args := flag.Args()
 	directory := args[0]
 
-	if !con.IsConvertableImage(*fromExt) || !con.IsConvertableImage(*toExt) {
+	if !convert.IsConvertableImage(*fromExt) || !convert.IsConvertableImage(*toExt) {
 		log.Fatal("Invalid Extension. Please specify jpg, png or gif extension.")
 	}
 
@@ -47,10 +47,10 @@ func convertRecursive(directory string, fromExt string, toExt string) int {
 		}
 
 		if !info.IsDir() && filepath.Ext(path) == fromExt {
-			if err := con.ConvertFile(path, fromExt, toExt); err != nil {
+			if err := convert.ConvertFile(path, fromExt, toExt); err != nil {
 				return err
 			}
-			if err := con.RemoveFile(path); err != nil {
+			if err := convert.RemoveFile(path); err != nil {
 				return err
 			}
 		}
