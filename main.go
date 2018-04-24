@@ -20,12 +20,18 @@ func main() {
 	var toExt = flag.String("t", ".png", "to extension")
 	flag.Usage = usage
 
+	flag.Parse()
+
 	if flag.NArg() != 1 {
 		log.Fatal("Invalid Args. Please specify only one direcoty.")
 	}
 
 	args := flag.Args()
 	directory := args[0]
+
+	if !con.IsConvertableImage(*fromExt) || !con.IsConvertableImage(*toExt) {
+		log.Fatal("Invalid Extension. Please specify jpg, png or gif extension.")
+	}
 
 	code := convertRecursive(directory, *fromExt, *toExt)
 	os.Exit(code)
