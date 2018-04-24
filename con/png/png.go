@@ -5,13 +5,13 @@ import (
 	"image/png"
 	"io"
 
-	"github.com/itosho/gonverter/cli"
+	"github.com/itosho/gonverter/con"
 )
 
 type Png struct{}
 
 func init() {
-	cli.Register(".png", Png{})
+	con.Register(".png", Png{})
 }
 
 func (p Png) Decode(file io.Reader) (image.Image, error) {
