@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 
 	"github.com/itosho/gonverter/con"
+	_ "github.com/itosho/gonverter/con/gif"
+	_ "github.com/itosho/gonverter/con/jpeg"
+	_ "github.com/itosho/gonverter/con/png"
 )
 
 const (
