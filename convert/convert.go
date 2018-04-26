@@ -25,12 +25,12 @@ func Register(ext string, image DecodeEncoder) {
 	images[ext] = image
 }
 
-func IsConvertableImage(ext string) bool {
+func IsConvertibleImage(ext string) bool {
 	_, ok := images[ext]
 	return ok
 }
 
-func ConvertFile(path string, fromExt string, toExt string) error {
+func CreateFile(path string, fromExt string, toExt string) error {
 	inFile, err := os.Open(path)
 	if err != nil {
 		return err

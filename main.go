@@ -32,7 +32,7 @@ func main() {
 	args := flag.Args()
 	directory := args[0]
 
-	if !convert.IsConvertableImage(*fromExt) || !convert.IsConvertableImage(*toExt) {
+	if !convert.IsConvertibleImage(*fromExt) || !convert.IsConvertibleImage(*toExt) {
 		log.Fatal("Invalid Extension. Please specify jpg, png or gif extension.")
 	}
 
@@ -47,7 +47,7 @@ func convertRecursive(directory string, fromExt string, toExt string) int {
 		}
 
 		if !info.IsDir() && filepath.Ext(path) == fromExt {
-			if err := convert.ConvertFile(path, fromExt, toExt); err != nil {
+			if err := convert.CreateFile(path, fromExt, toExt); err != nil {
 				return err
 			}
 			if err := convert.RemoveFile(path); err != nil {
