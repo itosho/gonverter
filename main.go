@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	ExitSuccess int = iota
+	ExitSuccess = iota
 	ExitError
 )
 
